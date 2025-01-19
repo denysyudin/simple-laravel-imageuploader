@@ -25,12 +25,12 @@ Route::post('/upload', function (Request $request) {
         
         try {
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer sk-CnyqUIgVZR5uKlrMK39ERsftNbMu6L3Q98lYe0C6NvjylPB8',
+                'Authorization' => env('STABILITY_API_KEY'),
             ])->attach(
                 'image', file_get_contents($image->getRealPath()), $image->getClientOriginalName(), [
                     'Content-Type' => $image->getMimeType(),
                 ]
-            )->post('https://api.stability.ai/v2beta/stable-image/generate/sd3', [
+            )->post(env('STABILITY_API_URL'), [
                 'prompt' => 'A beautiful image of a cat',
                 'output_format' => 'png',
                 'strength' => 0.5,
