@@ -62,8 +62,20 @@
                                 
                                 <img id="imagePreview" src="#" alt="Preview" class="img-fluid">
                                 
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Text Description</label>
+                                    <textarea 
+                                        id="description" 
+                                        name="description" 
+                                        rows="4" 
+                                        class="form-control"
+                                        placeholder="Enter your text description here..."
+                                        required
+                                    ></textarea>
+                                </div>
+
                                 <button type="submit" class="btn btn-primary mt-3" id="uploadButton">
-                                    <span id="buttonText"><i class="bi bi-upload"></i> Upload Image</span>
+                                    <span id="buttonText"><i class="bi bi-upload"></i> Generate Image</span>
                                     <span id="loadingSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                 </button>
                             </form>
@@ -93,7 +105,8 @@
             }
         }
 
-        document.getElementById('uploadForm').addEventListener('submit', function() {
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
             const button = document.getElementById('uploadButton');
             const spinner = document.getElementById('loadingSpinner');
             const buttonText = document.getElementById('buttonText');
@@ -101,6 +114,27 @@
             button.disabled = true;
             spinner.style.display = 'inline-block';
             buttonText.style.display = 'none';
+
+            fetch(this.action, {
+                method: 'POST',
+                body: new FormData(this)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/results?image=' + encodeURIComponent(data.image_path);
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => {
+                alert('An error occurred while processing your request.');
+            })
+            .finally(() => {
+                button.disabled = false;
+                spinner.style.display = 'none';
+                buttonText.style.display = 'inline';
+            });
         });
     </script>
 </body>
